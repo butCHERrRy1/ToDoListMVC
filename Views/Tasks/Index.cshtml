@@ -1,0 +1,56 @@
+@model IEnumerable<ToDoListMVC.Models.TaskItem>
+@{
+    ViewData["Title"] = "Список задач";
+    var status = ViewBag.Status as string ?? "all";
+    int activeCount = ViewBag.ActiveCount ?? 0;
+}
+
+<h1>Список задач</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">+ Добавить задачу</a>
+    <span class="ms-3">Невыполненных: <strong>@activeCount</strong></span>
+</p>
+
+<p>
+    Фильтр:
+    <a asp-action="Index" asp-route-status="all"
+       class="btn btn-sm @(status == "all" ? "btn-secondary" : "btn-outline-secondary")">Все</a>
+    <a asp-action="Index" asp-route-status="active"
+       class="btn btn-sm @(status == "active" ? "btn-secondary" : "btn-outline-secondary")">Невыполненные</a>
+    <a asp-action="Index" asp-route-status="done"
+       class="btn btn-sm @(status == "done" ? "btn-secondary" : "btn-outline-secondary")">Выполненные</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Title)</th>
+            <th>@Html.DisplayNameFor(m => m.Description)</th>
+            <th>@Html.DisplayNameFor(m => m.IsCompleted)</th>
+            <th>@Html.DisplayNameFor(m => m.CreatedAt)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr class="@(item.IsCompleted ? "table-success" : "")">
+            <td>@item.Title</td>
+            <td>@item.Description</td>
+            <td>@(item.IsCompleted ? "Да" : "Нет")</td>
+            <td>@item.CreatedAt.ToString("g")</td>
+            <td>
+                <form asp-action="Toggle" asp-route-id="@item.Id" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-success">
+                        @(item.IsCompleted ? "Снять отметку" : "Выполнено")
+                    </button>
+                </form>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Изменить</a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Детали</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Удалить</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
